@@ -4,7 +4,7 @@ import { resetRouter } from '@/router'
 
 const getDefaultState = () => {
   return {
-    token: getToken(),
+    XAPIKEY: getToken(),
     name: '',
     avatar: ''
   }
@@ -16,8 +16,8 @@ const mutations = {
   RESET_STATE: (state) => {
     Object.assign(state, getDefaultState())
   },
-  SET_TOKEN: (state, token) => {
-    state.token = token
+  SET_TOKEN: (state, XAPIKEY) => {
+    state.XAPIKEY = XAPIKEY
   },
   SET_NAME: (state, name) => {
     state.name = name
@@ -29,26 +29,24 @@ const mutations = {
 
 const actions = {
   // user login
-  login({ commit }, userInfo) {
-    const { username, password } = userInfo
-    return new Promise((resolve, reject) => {
-      login({ username: username.trim(), password: password }).then(response => {
-        const { data } = response
-        commit('SET_TOKEN', data.token)
-        setToken(data.token)
-        resolve()
-      }).catch(error => {
-        reject(error)
-      })
-    })
+  async login({ commit }, userInfo) {
+    const { username, encrypt_password } = userInfo
+    let result = await login({ username: username.trim(), encrypt_password: encrypt_password});
+    if (result.code==200) {
+      commit('SET_TOKEN', result.data.XAPIKEY);
+      setToken(result.data.XAPIKEY);
+      return "Ok"
+    }else{
+      return Promise.reject(new Error("faild!"))
+    }
   },
+
 
   // get user info
   getInfo({ commit, state }) {
     return new Promise((resolve, reject) => {
-      getInfo(state.token).then(response => {
+      getInfo(state.XAPIKEY).then(response => {
         const { data } = response
-
         if (!data) {
           return reject('Verification failed, please Login again.')
         }
@@ -64,10 +62,11 @@ const actions = {
     })
   },
 
+
   // user logout
-  logout({ commit, state }) {
+  async logout({ commit, state }) {
     return new Promise((resolve, reject) => {
-      logout(state.token).then(() => {
+      logout(state.XAPIKEY).then(() => {
         removeToken() // must remove  token  first
         resetRouter()
         commit('RESET_STATE')
@@ -94,4 +93,5 @@ export default {
   mutations,
   actions
 }
+
 

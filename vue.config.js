@@ -27,16 +27,25 @@ module.exports = {
   publicPath: '/',
   outputDir: 'dist',
   assetsDir: 'static',
-  lintOnSave: process.env.NODE_ENV === 'development',
+  // lintOnSave: process.env.NODE_ENV === 'development',
+  lintOnSave: false,
   productionSourceMap: false,
   devServer: {
     port: port,
-    open: true,
+    open: false,
     overlay: {
       warnings: false,
       errors: true
     },
-    before: require('./mock/mock-server.js')
+
+    //配置代理跨域
+    proxy: {
+      '/v1': {
+          target: 'http://127.0.0.1:8000',
+          // pathRewrite: { '^/v1': '' },
+      },
+  },
+
   },
   configureWebpack: {
     // provide the app's title in webpack's name field, so that

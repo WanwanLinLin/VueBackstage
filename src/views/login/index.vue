@@ -21,17 +21,17 @@
         />
       </el-form-item>
 
-      <el-form-item prop="password">
+      <el-form-item prop="encrypt_password">
         <span class="svg-container">
           <svg-icon icon-class="password" />
         </span>
         <el-input
           :key="passwordType"
-          ref="password"
-          v-model="loginForm.password"
+          ref="encrypt_password"
+          v-model="loginForm.encrypt_password"
           :type="passwordType"
           placeholder="Password"
-          name="password"
+          name="encrypt_password"
           tabindex="2"
           auto-complete="on"
           @keyup.enter.native="handleLogin"
@@ -45,7 +45,7 @@
 
       <div class="tips">
         <span style="margin-right:20px;">username: admin</span>
-        <span> password: any</span>
+        <span> encrypt_password: any</span>
       </div>
 
     </el-form>
@@ -66,7 +66,7 @@ export default {
       }
     }
     const validatePassword = (rule, value, callback) => {
-      if (value.length < 6) {
+      if (value.length < 2) {
         callback(new Error('The password can not be less than 6 digits'))
       } else {
         callback()
@@ -75,11 +75,11 @@ export default {
     return {
       loginForm: {
         username: 'admin',
-        password: '111111'
+        encrypt_password: '111111'
       },
       loginRules: {
         username: [{ required: true, trigger: 'blur', validator: validateUsername }],
-        password: [{ required: true, trigger: 'blur', validator: validatePassword }]
+        encrypt_password: [{ required: true, trigger: 'blur', validator: validatePassword }]
       },
       loading: false,
       passwordType: 'password',
@@ -102,7 +102,7 @@ export default {
         this.passwordType = 'password'
       }
       this.$nextTick(() => {
-        this.$refs.password.focus()
+        this.$refs.encrypt_password.focus()
       })
     },
     handleLogin() {
@@ -174,14 +174,14 @@ $cursor: #fff;
 
 <style lang="scss" scoped>
 $bg:#2d3a4b;
-$dark_gray:#889aa4;
-$light_gray:#eee;
+$dark_gray:#22b452;
+$light_gray:rgb(27, 185, 13);
 
 .login-container {
   min-height: 100%;
   width: 100%;
-  background-color: $bg;
   overflow: hidden;
+  background: url(~@/assets/duck.jpg);
 
   .login-form {
     position: relative;
