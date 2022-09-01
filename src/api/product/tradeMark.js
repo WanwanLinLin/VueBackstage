@@ -11,3 +11,6 @@ export const reqAddOrUpdateTradeMark = (tradeMark)=>{
         return request({url: "/admin/product/baseTrademark/save", method: "post", data: tradeMark});
     }
 }
+
+// 这是删除品牌的接口
+export const reqDeleteTradeMark = (id)=>request({url: `/admin/product/baseTrademark/remove/${id}`, method: "delete"});

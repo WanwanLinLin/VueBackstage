@@ -22,7 +22,7 @@
             修改
           </el-button>
 
-          <el-button type="danger" icon="el-icon-delete">
+          <el-button type="danger" icon="el-icon-delete" @click="deleteTradeMark(row)">
             删除
           </el-button>
         </template>
@@ -37,12 +37,12 @@
     </el-pagination>
 
     <!-- 对话框 -->
-    <el-dialog :title="tmForm.id?'修改品牌':'添加品牌'" :visible.sync="dialogFormVisible">
-      <el-form style="width:80%" :model="tmForm">
-        <el-form-item label="品牌名称" label-width="100px">
+    <el-dialog :title="tmForm.id ? '修改品牌' : '添加品牌'" :visible.sync="dialogFormVisible">
+      <el-form style="width:80%" :model="tmForm" :rules="rules" ref="ruleForm">
+        <el-form-item label="品牌名称" label-width="100px" prop="tmName">
           <el-input autocomplete="off" v-model="tmForm.tmName"></el-input>
         </el-form-item>
-        <el-form-item label="品牌LOGO" label-width="100px">
+        <el-form-item label="品牌LOGO" label-width="100px" prop="logoUrl">
 
           <el-upload class="avatar-uploader" action="/v1/admin/fileController/fileUpload" :show-file-list="false"
             :on-success="handleAvatarSuccess" :before-upload="beforeAvatarUpload">
@@ -64,6 +64,15 @@
 export default {
   name: "tradeMark",
   data() {
+    // 自定义校验规则
+    var validateTmName = (rule, value, callback) => {
+      if (value.length < 2 || value.length > 10) {
+        callback(new Error("品牌的名称长度应该为2~10位"));
+      } else {
+        callback();
+      }
+    }
+
     return {
       page: 1,
       limit: 3,
@@ -71,11 +80,21 @@ export default {
       list: [],
       // 对话框显示与隐藏
       dialogFormVisible: false,
-      // 搜集品牌的信息
       tmForm: {
         tmName: "",
         logoUrl: ""
       },
+
+      rules: {
+        tmName: [
+          { required: true, message: '请输入品牌名称', trigger: 'blur' },
+          { validator: validateTmName, trigger: 'change' }
+        ],
+        logoUrl: [
+          { required: true, message: '请选择品牌的图片' }
+        ],
+      },
+
     };
   },
 
@@ -110,7 +129,7 @@ export default {
     updateTradeMark(row) {
       this.dialogFormVisible = true;
       // 将已有的信息赋值给tmForm展示(使用浅拷贝)
-      this.tmForm = {...row};
+      this.tmForm = { ...row };
     },
 
     // 图片上传成功
@@ -133,20 +152,50 @@ export default {
       return isJPG && isLt2M;
     },
 
-    async addOrUpdateTrademark() {
-      this.dialogFormVisible = false;
-      // 发请求（添加品牌||修改品牌）
-      let result = await this.$API.trademark.reqAddOrUpdateTradeMark(this.tmForm);
-      if (result.code==200) {
-        this.$message({
-          type: "success",
-          message: this.tmForm.id? "修改品牌成功！" : "添加品牌成功！"
-        });
-        // 若是添加品牌，则停留在第一页；若是修改品牌，则停留在当前页
+    addOrUpdateTrademark() {
+      this.$refs.ruleForm.validate(async (success) => {
+        if (success) {
+          this.dialogFormVisible = false;
+          // 发请求（添加品牌||修改品牌）
+          let result = await this.$API.trademark.reqAddOrUpdateTradeMark(this.tmForm);
+          if (result.code == 200) {
+            this.$message({
+              type: "success",
+              message: this.tmForm.id ? "修改品牌成功！" : "添加品牌成功！"
+            });
+            // 若是添加品牌，则停留在第一页；若是修改品牌，则停留在当前页
 
-        this.getPageList(this.tmForm.id?this.page:1);
-      }
-    }
+            this.getPageList(this.tmForm.id ? this.page : 1);
+          }
+        } else {
+          this.$alert('抱歉，品牌logo不能重复！', '错误！', {
+            confirmButtonText: '确定',
+          })
+        }
+      })
+    },
+
+    deleteTradeMark(row) {
+      this.$confirm(`你确定删除${row.tmName}吗？`, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(async () => {
+        let result = await this.$API.trademark.reqDeleteTradeMark(row.id);
+        if (result.code == 200) {
+          this.$message({
+            type: 'success',
+            message: '删除成功!',
+          });
+          this.getPageList(this.list.length > 1 ? this.page : this.page - 1);
+        }
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        });
+      });
+    },
   },
 }
 </script>

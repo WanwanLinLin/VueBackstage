@@ -37,7 +37,13 @@ Vue.config.productionTip = false
 
 // 引入API
 import API from "@/api" 
+// 引入三级联动组件
+import CategorySelect from "@/components/CategorySelect"
+import HintButton from "@/components/HintButton"
+
 Vue.prototype.$API = API;
+Vue.component(CategorySelect.name, CategorySelect);
+Vue.component(HintButton.name, HintButton);
 
 new Vue({
   el: '#app',
