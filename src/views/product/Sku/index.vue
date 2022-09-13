@@ -14,52 +14,88 @@
       <el-table-column prop="price" label="价格" width="80"></el-table-column>
       <el-table-column prop="prop" label="操作" width="width">
         <template slot-scope="{row, $index}">
-          <el-button type="success" icon="el-icon-sort-down" size="mini"></el-button>
-          <el-button type="success" icon="el-icon-sort-up" size="mini"></el-button>
-          <el-button type="primary" icon="el-icon-edit-outline" size="mini"></el-button>
-          <el-button type="info" icon="el-icon-info" size="mini"></el-button>
+          <el-button type="success" icon="el-icon-sort-down" size="mini" v-if="row.isSale == 0" @click="sale(row)">
+          </el-button>
+          <el-button type="success" icon="el-icon-sort-up" size="mini" v-else @click="cancelSale(row)"></el-button>
+          <el-button type="primary" icon="el-icon-edit-outline" size="mini" @click="editSku"></el-button>
+          <el-button type="info" icon="el-icon-info" size="mini" @click="getSkuById(row)"></el-button>
           <el-button type="danger" icon="el-icon-delete" size="mini"></el-button>
         </template>
       </el-table-column>
     </el-table>
     <!-- 这里是分页 -->
-    <el-pagination
-    @current-change="getSkuList"
-    @size-change="handleSizeChange" 
-    style="text-align: center" 
-    :current-page="page" 
-    :page-sizes="[1, 2, 5]" 
-    :page-size="limit"
-    layout="prev, pager, next, jumper, -> , sizes, total" 
-    :total="total">
-  </el-pagination>
+    <el-pagination @current-change="getSkuList" @size-change="handleSizeChange" style="text-align: center"
+      :current-page="page" :page-sizes="[1, 2, 5]" :page-size="limit"
+      layout="prev, pager, next, jumper, -> , sizes, total" :total="total">
+    </el-pagination>
+
+    <!-- 抽屉效果 -->
+    <el-drawer :visible.sync="drawer" :show-close="false" size="50%">
+      <el-row>
+        <el-col :span="5">名称</el-col>
+        <el-col :span="16">{{ skuInfo.skuName }}</el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="5">描述</el-col>
+        <el-col :span="16">{{ skuInfo.skuDesc }}</el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="5">价格</el-col>
+        <el-col :span="16">{{ skuInfo.price }} 元</el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="5">平台属性</el-col>
+        <el-col :span="16">
+          <template>
+            <el-tag type="success" v-for="(attr, index) in skuInfo.skuAttrValueList" :key="attr.id"
+              style="margin-right: 10px;">
+              {{ attr.attrId }}-{{ attr.valueId }}
+            </el-tag>
+          </template>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="5">商品图片</el-col>
+        <el-col :span="16">
+          <el-carousel height="500px">
+            <el-carousel-item v-for="item in skuInfo.skuImageList" :key="item.id">
+              <img :src="item.imageUrl" style="width:410.3px;height:500px">
+            </el-carousel-item>
+          </el-carousel>
+        </el-col>
+      </el-row>
+    </el-drawer>
   </div>
 </template>
 
 <script>
 export default {
   name: "Sku",
-  data () {
+  data() {
     return {
       page: 1,
       limit: 1,
       // 存储SKU列表
       records: [],
-      total: 0  
+      total: 0,
+      // 存储SKU信息
+      skuInfo: {},
+      // 控制抽屉的显示与隐藏
+      drawer: false
     }
   },
-  mounted () {
+  mounted() {
     // 获取SKU列表
     this.getSkuList();
   },
 
   methods: {
-    async getSkuList(pages=1) {
+    async getSkuList(pages = 1) {
       this.page = pages;
       // 解构出默认参数
-      const {page, limit} = this
+      const { page, limit } = this
       let result = await this.$API.sku.reqAllSkuList(page, limit);
-      if (result.code==200) {
+      if (result.code == 200) {
         this.total = result.data.total;
         this.records = result.data.records;
       }
@@ -69,9 +105,76 @@ export default {
       this.limit = limit;
       this.getSkuList();
     },
+
+    // 上架
+    async sale(row) {
+      let result = await this.$API.sku.reqSale(row.id);
+      if (result.code == 200) {
+        row.isSale = 1;
+        this.$message({ type: "success", message: "上架成功!" })
+      }
+    },
+
+    // 下架
+    async cancelSale(row) {
+      let result = await this.$API.sku.reqCancel(row.id);
+      if (result.code == 200) {
+        row.isSale = 0;
+        this.$message({ type: "success", message: "下架成功!" })
+      }
+    },
+
+    editSku() {
+      this.$message("抱歉，该功能尚未开放！")
+    },
+
+    // 获取SKU详情
+    async getSkuById(sku) {
+      // 展示抽屉
+      this.drawer = true;
+      let result = await this.$API.sku.reqSkuById(sku.id);
+      if (result.code == 200) {
+        this.skuInfo = result.data;
+      }
+    },
   }
 }
 </script>
 
+
 <style>
+  .el-carousel__item h3 {
+    color: #475669;
+    font-size: 14px;
+    opacity: 0.75;
+    line-height: 150px;
+    margin: 0;
+  }
+
+  .el-carousel__item:nth-child(2n) {
+     background-color: #99a9bf;
+  }
+  
+  .el-carousel__item:nth-child(2n+1) {
+     background-color: #d3dce6;
+  }
+
+  .el-carousel__button{
+    width: 10px;
+    height: 10px;
+    background: bisque;
+    border-radius: 50%;
+  }
+</style>
+
+<style scoped>
+.el-row .el-col-5 {
+  color: rgb(0, 102, 255);
+  font-size: 18px;
+  text-align: right;
+}
+
+.el-col {
+  margin: 10px 10px;
+}
 </style>

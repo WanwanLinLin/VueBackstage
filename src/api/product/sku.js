@@ -18,3 +18,15 @@ export const reqSkuList = (spuId)=>request({url: `/admin/skuManagement/product/f
 
 // 展示所有SKU
 export const reqAllSkuList = (page, limit)=>request({url: `/admin/skuManagement/product/list/${page}/${limit}`, method: "get"});
+
+// 上架SKU
+export const reqSale = (skuId)=>request({url: `/admin/skuManagement/product/onSale/${skuId}`, method: "get"});
+
+// 下架SKU
+export const reqCancel = (skuId)=>request({url: `/admin/skuManagement/product/cancelSale/${skuId}`, method: "get"});
+
+// 获取SKU详情
+export const reqSkuById = (skuId)=>request({url: `/admin/skuManagement/product/getSkuById/${skuId}`, method: "get"});
+
+
+
