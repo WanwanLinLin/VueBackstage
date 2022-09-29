@@ -59,7 +59,7 @@
         <el-col :span="16">
           <el-carousel height="500px">
             <el-carousel-item v-for="item in skuInfo.skuImageList" :key="item.id">
-              <img :src="item.imageUrl" style="width:410.3px;height:500px">
+              <img :src="item.imageUrl" style="width:439.69px;height:500px">
             </el-carousel-item>
           </el-carousel>
         </el-col>
