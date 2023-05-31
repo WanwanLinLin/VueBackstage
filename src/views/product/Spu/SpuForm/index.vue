@@ -14,10 +14,10 @@
                 <el-input type="textarea" row="4" placeholder="描述" v-model="spu.description"></el-input>
             </el-form-item>
             <el-form-item label="SPU图片">
-                <el-upload action="/v1/admin/fileController/fileUpload_2" 
+                <el-upload action="/v1/admin/fileController/fileUpload_2"
                 list-type="picture-card"
-                :on-preview="handlePictureCardPreview" 
-                :on-remove="handleRemove" 
+                :on-preview="handlePictureCardPreview"
+                :on-remove="handleRemove"
                 :file-list="spuImageList"
                 :on-success="handlerSuccess">
                 <i class="el-icon-plus"></i>
@@ -31,7 +31,7 @@
                     <el-option :label="unselect.name" :value="`${unselect.id}:${unselect.name}`" v-for="(unselect, index) in unSelectSaleAttr" :key="unselect.id">
                     </el-option>
                 </el-select>
-                <el-button type="primary" icon="el-icon-plus" 
+                <el-button type="primary" icon="el-icon-plus"
                 :disabled="!attrIdAndAttrName"
                 @click="addSaleAttr">
                     添加销售属性
@@ -44,7 +44,7 @@
                     <el-table-column prop="prop" label="属性值名称列表" width="width">
                         <template slot-scope="{row, $index}">
                             <!-- el-tag专门用于展示已有的属性值列表的数据 -->
-                            <el-tag :key="tag.id" 
+                            <el-tag :key="tag.id"
                                 v-for="(tag,index) in row.spuSaleAttrValueList" closable
                                 :disable-transitions="false"
                                 @close="row.spuSaleAttrValueList.splice(index,1)">
@@ -52,10 +52,10 @@
                             </el-tag>
                             <!-- 以下结构相当于span与input切换 -->
                             <!-- @keyup.enter.native="handleInputConfirm" @blur="handleInputConfirm" -->
-                            <el-input 
-                                class="input-new-tag" 
-                                v-if="row.inputVisible" 
-                                v-model="row.inputValue" 
+                            <el-input
+                                class="input-new-tag"
+                                v-if="row.inputVisible"
+                                v-model="row.inputValue"
                                 ref="saveTagInput"
                                 size="small"
                                 @blur="handleInputConfirm(row)"
@@ -68,7 +68,7 @@
                     </el-table-column>
                     <el-table-column prop="prop" label="操作" width="width">
                         <template slot-scope="{row, $index}">
-                            <el-button type="danger" icon="el-icon-delete" 
+                            <el-button type="danger" icon="el-icon-delete"
                             size="mini" @click="spu.spuSaleAttrList.splice($index,1)"></el-button>
                         </template>
                     </el-table-column>
@@ -144,7 +144,7 @@ export default {
         // 在照片墙删除某一个图片的时候会触发
         handleRemove(file, fileList) {
             // 收集照片墙的数据
-            this.spuImageList = fileList;  
+            this.spuImageList = fileList;
         },
         handlePictureCardPreview(file) {
             // 将图片的地址赋值给这个属性
@@ -246,7 +246,7 @@ export default {
                 // 添加应该回到首页，修改应该停留在当前页
                 this.$emit("changeScene", {scene: 0, flag: this.spu.id?"修改":"添加"});
                 // 清除数据
-                Object.assign(this._data, this.$options.data()); 
+                Object.assign(this._data, this.$options.data());
             }
         },
 
@@ -273,7 +273,7 @@ export default {
             // this.$options可以获取配置对象，配置对象的data函数执行，返回的响应式数据为空
             Object.assign(this._data, this.$options.data());
         },
-        
+
     },
 
     computed: {
@@ -310,4 +310,3 @@ export default {
     vertical-align: bottom;
 }
 </style>
-  

@@ -58,7 +58,7 @@
       </div>
     </el-dialog>
   </div>
-</template> 
+</template>
 
 <script>
 export default {

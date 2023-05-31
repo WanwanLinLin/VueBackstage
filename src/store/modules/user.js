@@ -67,6 +67,7 @@ const actions = {
   async logout({ commit, state }) {
     return new Promise((resolve, reject) => {
       logout(state.XAPIKEY).then(() => {
+        console.log('state.XAPIKEY is ', state.XAPIKEY)
         removeToken() // must remove  token  first
         resetRouter()
         commit('RESET_STATE')

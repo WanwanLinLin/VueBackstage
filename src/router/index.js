@@ -52,7 +52,7 @@ export const constantRoutes = [
       name: 'Dashboard',
       component: () => import('@/views/dashboard/index'),
       meta: { title: '首页', icon: 'dashboard' }
-    }] 
+    }]
   },
 
   {
@@ -61,6 +61,12 @@ export const constantRoutes = [
     name: "product",
     meta: {title: "商品管理", icon: "el-icon-goods"},
     children: [
+      {
+        path: "addCategory",
+        name: "addCategory",
+        component: ()=>import("@/views/product/AddCategory"),
+        meta: {title: "增加种类"}
+      },
       {
         path: "trademark",
         name: "TradeMark",

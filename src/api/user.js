@@ -19,6 +19,6 @@ export function getInfo(XAPIKEY) {
 export function logout() {
   return request({
     url: '/admin/acl/index/logout',
-    method: 'post'
+    method: 'get'
   })
 }
